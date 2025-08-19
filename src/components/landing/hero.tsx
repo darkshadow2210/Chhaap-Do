@@ -34,8 +34,8 @@ export function Hero() {
       <div className="z-10">
         <Image
           src="/hero_section.png"
-          width={700}
-          height={500}
+          width={600}
+          height={300}
           alt="Illustration of a person printing via phone"
           className="rounded-lg shadow-lg"
           data-ai-hint="printing phone"
