@@ -33,7 +33,7 @@ export function Hero() {
 
       <div className="z-10">
         <Image
-          src="https://img.freepik.com/premium-photo/collection-objects-including-white-hat-pen-tool-tool_962705-975.jpg?w=1480"
+          src="/hero_section.jpg"
           width={700}
           height={500}
           alt="Illustration of a person printing via phone"
