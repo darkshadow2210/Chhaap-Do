@@ -33,7 +33,7 @@ export function Hero() {
 
       <div className="z-10">
         <Image
-          src="/hero_section.jpg"
+          src="/hero_section.png"
           width={700}
           height={500}
           alt="Illustration of a person printing via phone"
