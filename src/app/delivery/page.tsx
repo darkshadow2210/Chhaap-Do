@@ -34,38 +34,34 @@ export default function DeliveryPage() {
     }, [mapLoaded]);
 
     // Initialize map when loaded
-        useEffect(() => {
-            if (mapLoaded && mapRef.current) {
-                // Default center (India)
-                const defaultLatLng = latLng || { lat: 22.9734, lng: 78.6569 };
-                // @ts-ignore
-                const map = new window.google.maps.Map(mapRef.current, {
-                    center: defaultLatLng,
-                    zoom: 5,
-                });
-                setMapInstance(map);
+    useEffect(() => {
+        if (mapLoaded && mapRef.current) {
+            // Default center (India)
+            const defaultLatLng = latLng || { lat: 22.9734, lng: 78.6569 };
+            // @ts-ignore
+            const map = new window.google.maps.Map(mapRef.current, {
+                center: defaultLatLng,
+                zoom: 5,
+            });
+            setMapInstance(map);
 
-                // Place initial blue geolocator marker
-                placeOrMoveMarker(defaultLatLng, map, true);
-                reverseGeocode(defaultLatLng);
-
-                // Add click event to map
-                // @ts-ignore
-                window.google.maps.event.addListener(map, "click", async (event: any) => {
-                    const clickedLatLng = {
-                        lat: event.latLng.lat(),
-                        lng: event.latLng.lng(),
-                    };
-                    setLatLng(clickedLatLng);
-                    placeOrMoveMarker(clickedLatLng, map, false);
-                    await reverseGeocode(clickedLatLng);
-                });
-            }
-            // eslint-disable-next-line
-        }, [mapLoaded]);
+            // Add click event to map
+            // @ts-ignore
+            window.google.maps.event.addListener(map, "click", async (event: any) => {
+                const clickedLatLng = {
+                    lat: event.latLng.lat(),
+                    lng: event.latLng.lng(),
+                };
+                setLatLng(clickedLatLng);
+                placeOrMoveMarker(clickedLatLng, map);
+                await reverseGeocode(clickedLatLng);
+            });
+        }
+        // eslint-disable-next-line
+    }, [mapLoaded]);
 
         // Place or move marker on map using AdvancedMarkerElement
-        const placeOrMoveMarker = (position: { lat: number; lng: number }, map: any, isInitial = false) => {
+        const placeOrMoveMarker = (position: { lat: number; lng: number }, map: any) => {
             if (marker) {
                 marker.map = null;
             }
@@ -79,11 +75,10 @@ export default function DeliveryPage() {
                     div.style.width = '40px';
                     div.style.height = '40px';
                     div.style.background = 'none';
-                    div.innerHTML = isInitial
-                        ? `<img src="https://maps.gstatic.com/mapfiles/ms2/micons/blue.png" style="width:40px;height:40px;" />`
-                        : `<img src="https://maps.gstatic.com/mapfiles/ms2/micons/man.png" style="width:40px;height:40px;" />`;
+                    div.innerHTML = `<img src="https://maps.gstatic.com/mapfiles/ms2/micons/man.png" style="width:40px;height:40px;" />`;
                     return div;
                 })(),
+                // AdvancedMarkerElement does not support draggable directly, so we add drag logic below
             });
             setMarker(newMarker);
 
@@ -131,29 +126,29 @@ export default function DeliveryPage() {
         }
     };
 
-        // Get current location and autofill address
-        const handleUseLocation = async () => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(async (position) => {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    setLatLng({ lat, lng });
-                    if (mapInstance) {
-                        mapInstance.setCenter({ lat, lng });
-                        mapInstance.setZoom(15);
-                        placeOrMoveMarker({ lat, lng }, mapInstance, false);
-                    }
-                    await reverseGeocode({ lat, lng });
-                });
-            }
-        };
+    // Get current location and autofill address
+    const handleUseLocation = async () => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                const lat = position.coords.latitude;
+                const lng = position.coords.longitude;
+                setLatLng({ lat, lng });
+                if (mapInstance) {
+                    mapInstance.setCenter({ lat, lng });
+                    mapInstance.setZoom(15);
+                    placeOrMoveMarker({ lat, lng }, mapInstance);
+                }
+                await reverseGeocode({ lat, lng });
+            });
+        }
+    };
 
     return (
         <>
             <Header />
             <div className="container py-24 max-w-2xl mx-auto">
                 <Card className="p-8 shadow-lg">
-                    <h1 className="text-3xl font-bold mb-6 text-center">Delivery Details</h1>
+                    <h1 className="text-3xl font-bold mb-6 text-center">Contact Details</h1>
                     <div className="mb-8">
                         <div ref={mapRef} className="w-full h-64 bg-muted/30 rounded-lg mb-4" />
                         <Button className="w-full mb-4" variant="default" onClick={handleUseLocation}>
@@ -198,7 +193,7 @@ export default function DeliveryPage() {
                             required
                         />
                         <Button className="w-full mt-4" variant="default" type="submit">
-                            Confirm Delivery
+                            Submit
                         </Button>
                     </form>
                 </Card>
